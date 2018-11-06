@@ -109,7 +109,7 @@ GameWindow::GameWindow()
 	hr = _init(); 
 
 
-
+	
 }
 
 GameWindow::~GameWindow()

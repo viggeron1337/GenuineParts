@@ -23,6 +23,7 @@
     <ProjectGuid>{FB7AAC75-8364-4B31-B7ED-D9184C64E97E}</ProjectGuid>
     <RootNamespace>FakeIt3D</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <ProjectName>GenuineParts</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -72,6 +73,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)</OutDir>
     <IntDir>$(SolutionDir)Obj\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_DebugX64</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -124,11 +126,15 @@
     <ClCompile Include="GameWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="Utility\Vector.cpp" />
+    <ClCompile Include="Window\VideoMode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Extern.h" />
     <ClInclude Include="GameWindow.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="Utility\Vector.h" />
+    <ClInclude Include="Window\VideoMode.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Vertex.hlsl" />

@@ -2,9 +2,7 @@
 int main()
 {
 	GameWindow gameWindow;
-	gameWindow.start(); 
-
-
+	gameWindow.start();
 
 	return 0;
 }

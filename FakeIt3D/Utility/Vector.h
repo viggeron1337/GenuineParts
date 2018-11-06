@@ -45,7 +45,7 @@ typename Vector<T>::iterator Vector<T>::Begin()
 template<class T>
 typename Vector<T>::type & Vector<T>::Front() const
 {
-	T*p = reinterpret_cast<T*>(m_buffer);
+	Vector<T>::type*p = reinterpret_cast<Vector<T>::type*>(m_buffer);
 	return *p;
 }
 
@@ -55,8 +55,8 @@ void Vector<T>::PushBack(const type & _value)
 	if (m_size >= m_capacity)
 		Reserve(m_capacity << 1);
 
-	buffer_type* pos = (m_buffer + (sizeof(T) * m_size));
-	pos = _value;
+	T* pos = (T*)(m_buffer + (sizeof(T) * m_size++));
+	*pos = _value;
 }
 
 template<class T>

@@ -24,6 +24,9 @@
     <ClCompile Include="Object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ForwardRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Window\VideoMode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -41,6 +44,9 @@
     <ClInclude Include="Object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ForwardRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Window\VideoMode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -52,10 +58,8 @@
     <FxCompile Include="Vertex.hlsl">
       <Filter>Source Files</Filter>
     </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Pixel.hlsl">
+    <FxCompile Include="Pixel.hlsl">
       <Filter>Source Files</Filter>
-    </None>
+    </FxCompile>
   </ItemGroup>
 </Project>

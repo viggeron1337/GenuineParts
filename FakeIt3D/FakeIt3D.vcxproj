@@ -123,6 +123,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ForwardRenderer.cpp" />
     <ClCompile Include="GameWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Object.cpp" />
@@ -131,16 +132,22 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Extern.h" />
+    <ClInclude Include="ForwardRenderer.h" />
     <ClInclude Include="GameWindow.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Utility\Vector.h" />
     <ClInclude Include="Window\VideoMode.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Vertex.hlsl" />
+    <FxCompile Include="Vertex.hlsl">
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Pixel.hlsl" />
+    <FxCompile Include="Pixel.hlsl">
+      <FileType>Document</FileType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

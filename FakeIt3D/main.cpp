@@ -1,4 +1,5 @@
 #include "GameWindow.h"
+#include "ForwardRenderer.h"
 int main()
 {
 	GameWindow gameWindow;

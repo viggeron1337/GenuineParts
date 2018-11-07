@@ -107,9 +107,7 @@ GameWindow::GameWindow()
 {
 	HRESULT hr;
 	hr = _init(); 
-
-
-	
+	m_fR = new ForwardRenderer();
 }
 
 GameWindow::~GameWindow()
@@ -123,6 +121,11 @@ int GameWindow::start()
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
+
+		if (DX::g_device != nullptr)
+		{
+			m_fR->draw();
+		}
 	}
 	
 	return (int)msg.wParam;
@@ -153,6 +156,7 @@ LRESULT GameWindow::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 		break;
 	}
+
 	return 0; 
 }
 

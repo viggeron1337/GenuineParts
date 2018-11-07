@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include "Extern.h"
+#include "ForwardRenderer.h"
 
 class GameWindow
 {
@@ -15,6 +16,8 @@ private:
 	int _setWcex();
 	int  _createWindow();
 	HRESULT _connectDirect3D(); 
+
+	ForwardRenderer* m_fR; 
 
 public:
 	GameWindow();

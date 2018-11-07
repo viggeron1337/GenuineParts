@@ -10,7 +10,7 @@ private:
 
 	struct CONSTANT_BUFFER
 	{
-		DirectX::XMFLOAT4X4A m_worldMatrix; 
+		DirectX::XMFLOAT4X4A m_wvp; 
 	};
 
 	ID3D11Buffer* m_pVertexBuffer = nullptr;

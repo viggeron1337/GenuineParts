@@ -1,5 +1,4 @@
 #pragma once
-#include <vector>
 
 /*
 	VideoMode defines a video mode (width,height,bits per pixel)
@@ -27,11 +26,10 @@ public:
 		Get the current desktop video mode
 
 		return:
-		Curerent dekstop video mode
+		Current dekstop video mode
 	*/
 	VideoMode GetDesktopMode() const;
 
-	
 
 	/*
 		Get the current mode width

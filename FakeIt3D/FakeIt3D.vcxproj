@@ -91,7 +91,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -126,14 +126,20 @@
     <ClCompile Include="ForwardRenderer.cpp" />
     <ClCompile Include="GameWindow.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Network\IPAddress.cpp" />
+    <ClCompile Include="Network\Socket.cpp" />
+    <ClCompile Include="Network\TCPSocket.cpp" />
     <ClCompile Include="Object.cpp" />
-    <ClCompile Include="Utility\Vector.cpp" />
     <ClCompile Include="Window\VideoMode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Extern.h" />
     <ClInclude Include="ForwardRenderer.h" />
     <ClInclude Include="GameWindow.h" />
+    <ClInclude Include="Network\Config.h" />
+    <ClInclude Include="Network\IPAddress.h" />
+    <ClInclude Include="Network\Socket.h" />
+    <ClInclude Include="Network\TCPSocket.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Utility\Vector.h" />
     <ClInclude Include="Window\VideoMode.h" />

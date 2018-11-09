@@ -1,32 +1,53 @@
 #include "IPAddress.h"
 #include "Socket.h"
 
+const IPAddress IPAddress::Any(0, 0, 0, 0);
+const IPAddress IPAddress::Localhost("localhost");
+
 ////////////////////////////////////////////////////
 IPAddress::IPAddress() :
 m_address	(0),
+m_addressStr(),
 m_valid		(false)
 {
 }
 
+////////////////////////////////////////////////////
 IPAddress::IPAddress(const std::string & _address) :
 m_address	(0),
+m_addressStr(_address),
 m_valid		(false)
+
 {
 	resolve(_address);
 }
 
+////////////////////////////////////////////////////
+IPAddress::IPAddress(Uint8 _a, Uint8 _b, Uint8 _c, Uint8 _d) :
+m_address	(htonl((_a << 24) | (_b << 16) | (_c << 8) | _d)),
+m_addressStr(std::to_string(_a) + "." + std::to_string(_b) + "." + std::to_string(_c) + "." + std::to_string(_d)),
+m_valid		(true)
+{
+
+}
+
+////////////////////////////////////////////////////
 Uint32 IPAddress::ToInteger() const
 {
 	return ntohl(m_address);
 }
 
+std::string IPAddress::ToStr() const
+{
+	return m_addressStr;
+}
+
+////////////////////////////////////////////////////
 void IPAddress::resolve(const std::string & _address)
 {
 	m_address = 0;
 	m_valid = false;
 
-
-	
 	addrinfo hints;
 	ZeroMemory(&hints, sizeof(hints));
 	hints.ai_family = AF_INET;

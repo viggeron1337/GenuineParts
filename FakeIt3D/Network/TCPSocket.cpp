@@ -2,24 +2,36 @@
 
 ////////////////////////////////////////////////////
 TCPSocket::TCPSocket() :
-Socket(TCP)
+	Socket(TCP)
 {
 
 }
 
-Socket::Status TCPSocket::Connect(const IPAddress & _remoteadr, Uint16 _remotePort)
+////////////////////////////////////////////////////
+Socket::Status TCPSocket::Connect(const IPAddress & _remoteadr, const char* _remotePort)
 {
 	// Disconnect the socket if it is already connected
 	Disconnect();
 
-	create();
+	LPADDRINFO addr_srv = nullptr;
+	Status status = Socket::createAddress(_remoteadr.ToStr().c_str(), _remotePort, addr_srv);
+	if (status != Status::Done)
+	{
+		return Socket::getErrorStatus();
+	}
 
-	sockaddr_in address = createAddress(_remoteadr.ToInteger(), _remotePort);
+	Socket::create(addr_srv);
 
 
-	return Status();
+	if(connect(getHandle(), addr_srv->ai_addr, addr_srv->ai_addrlen) == -1)
+	{
+		return Socket::getErrorStatus();
+	}
+
+	return Done;
 }
 
+////////////////////////////////////////////////////
 void TCPSocket::Disconnect()
 {
 	Socket::close();

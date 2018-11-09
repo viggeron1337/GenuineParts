@@ -123,24 +123,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ForwardRenderer.cpp" />
-    <ClCompile Include="GameWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Network\IPAddress.cpp" />
     <ClCompile Include="Network\Socket.cpp" />
+    <ClCompile Include="Network\TCPListener.cpp" />
     <ClCompile Include="Network\TCPSocket.cpp" />
-    <ClCompile Include="Object.cpp" />
     <ClCompile Include="Window\VideoMode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Extern.h" />
-    <ClInclude Include="ForwardRenderer.h" />
-    <ClInclude Include="GameWindow.h" />
     <ClInclude Include="Network\Config.h" />
     <ClInclude Include="Network\IPAddress.h" />
     <ClInclude Include="Network\Socket.h" />
+    <ClInclude Include="Network\TCPListener.h" />
     <ClInclude Include="Network\TCPSocket.h" />
-    <ClInclude Include="Object.h" />
     <ClInclude Include="Utility\Vector.h" />
     <ClInclude Include="Window\VideoMode.h" />
   </ItemGroup>

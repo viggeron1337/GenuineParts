@@ -5,6 +5,7 @@ struct SocketInit
 {
 	SocketInit()
 	{
+		std::cout << "Körs" << std::endl;
 		WSADATA init;
 		WSAStartup(MAKEWORD(2, 2), &init);
 	}
@@ -15,6 +16,8 @@ struct SocketInit
 	}
 };
 
+SocketInit globalInit;
+
 ////////////////////////////////////////////////////
 Socket::Socket(Type _type):
 m_type			(_type),
@@ -24,17 +27,18 @@ m_isBlocking	(false)
 }
 
 ////////////////////////////////////////////////////
-void Socket::create()
+void Socket::create(LPADDRINFO _addr)
 {
 	if (m_socket == INVALID_SOCKET)
 	{
-		SocketHandle handle = socket(PF_INET, m_type == TCP ? SOCK_STREAM : SOCK_DGRAM, 0);
+		SocketHandle handle = socket(_addr->ai_family, _addr->ai_socktype, _addr->ai_protocol);
 
 		if (handle == INVALID_SOCKET)
 		{
 			std::cerr << __FILE__ << std::endl;
 		}
 
+		create(handle);
 
 	}
 }
@@ -80,15 +84,50 @@ void Socket::close()
 	}
 }
 
-sockaddr_in Socket::createAddress(Uint32 _address, Uint16 _port)
+Socket::Status Socket::createAddress(const char* _address, const char* _port, LPADDRINFO& _addr)
 {
-	sockaddr_in addr;
-	ZeroMemory(&addr, sizeof(addr));
-	addr.sin_addr.s_addr = htonl(_address);
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(_port);
+	ADDRINFO hints;
+	ZeroMemory(&hints, sizeof(hints));
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_protocol = IPPROTO_TCP;
+	
+	if (getaddrinfo(_address, _port, &hints, &_addr) != 0)
+	{
+		return Socket::getErrorStatus();
+	}
 
-	return addr;
+	if (_addr == nullptr)
+	{
+		return Socket::getErrorStatus();
+	}
+
+	return Done;
+}
+
+////////////////////////////////////////////////////
+Socket::SocketHandle Socket::getHandle() const
+{
+	return m_socket;
+}
+
+////////////////////////////////////////////////////
+Socket::Status Socket::getErrorStatus() const
+{
+	switch (WSAGetLastError())
+	{
+		case WSAEWOULDBLOCK:	return Socket::NotReady;
+		case WSAEALREADY:		return Socket::NotReady;
+		case WSAECONNABORTED:	return Socket::Disconnected;
+		case WSAECONNRESET:		return Socket::Disconnected;
+		case WSAETIMEDOUT:		return Socket::Disconnected;
+		case WSAENETRESET:		return Socket::Disconnected;
+		case WSAENOTCONN:		return Socket::Disconnected;
+		case WSAEISCONN:		return Socket::Done;
+		default:				
+			std::cout << WSAGetLastError() << std::endl;
+			return Socket::Error;
+	}
 }
 
 

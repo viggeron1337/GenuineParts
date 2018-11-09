@@ -35,13 +35,17 @@ protected:
 
 	Socket(Type _type);
 
-	void create();
+	void create(LPADDRINFO _addr);
 
 	void create(SocketHandle handle);
 
 	void close();
 
-	sockaddr_in createAddress(Uint32 _address, Uint16 _port);
+	Socket::Status createAddress(const char* _address, const char* _port, LPADDRINFO& _addr);
+
+	SocketHandle getHandle() const;
+
+	Socket::Status getErrorStatus() const; 
 
 private:
 	Type			m_type;

@@ -2,7 +2,8 @@
 #include "Socket.h"
 #include "IPAddress.h"
 
-class TCPSocket : Socket
+class TCPListener;
+class TCPSocket : public Socket
 {
 public:
 	/*
@@ -10,10 +11,11 @@ public:
 	*/
 	TCPSocket();
 
-	Status Connect(const IPAddress& _remoteadr, Uint16 _remotePort);
+	Status Connect(const IPAddress& _remoteadr, const char* _remotePort);
 
 	void Disconnect();
 private:
+	friend class TCPListener;
 
 };
 

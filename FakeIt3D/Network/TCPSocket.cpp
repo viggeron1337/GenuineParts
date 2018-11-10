@@ -159,7 +159,7 @@ Socket::Status TCPSocket::Receive(Packet & packet)
 
 		if (received > 0)
 		{
-			m_pendingPacket.Data.Reserve(m_pendingPacket.Data.Size() + received);
+			m_pendingPacket.Data.Resize(m_pendingPacket.Data.Size() + received);
 			char* begin = &m_pendingPacket.Data[0] + m_pendingPacket.Data.Size() - received;
 			std::memcpy(begin, buffer, received);
 		}
@@ -187,5 +187,4 @@ Size		(0),
 SizeReceived(0),
 Data		()
 {
-
 }

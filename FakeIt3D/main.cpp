@@ -1,37 +1,73 @@
-#include "Utility/Vector.h"
 #include <iostream>
 #include "Network/TCPSocket.h"
+#include "Network/TCPListener.h"
 
-class Person
+const char* G_PORT = "27015";
+
+void Server()
 {
-private:
-	int age;
-	int age2;
-	double lol;
-public:
-	Person(int a, int a2, double l)
-	{
-		age = a;
-		age2 = a2;
-		lol = l;
-	}
-};
+	TCPListener listener;
+	Socket::Status status;
 
-int main()
+	status = listener.Listen(G_PORT);
+	if(status == Socket::Done)
+		std::cout << "Bound on (" << G_PORT << ")\n";
+	else 
+		return;
+
+	TCPSocket s;
+	status = listener.Accept(s);
+	if (status == Socket::Done)
+		std::cout << "Accepted a socket!" << std::endl;
+	else
+		return;
+	do
+	{
+		Packet p;
+		status = s.Receive(p);
+		
+		std::string str;
+		p >> str;
+		std::cout << str << std::endl;
+
+	} while (status == Socket::Done);
+}
+
+void Client()
 {
 	TCPSocket s;
 
-	Packet p;
+	if (s.Connect(IPAddress::Localhost, G_PORT) == Socket::Status::Done)
+	{
+		
+		std::string str;
+		do
+		{
+			Packet p;
 
-	Person p2(20, 30, 6.7);
-	p << p2;
-
-	Person p3(0, 0, 0);
+			
+			std::getline(std::cin, str);
+			p << str;
+			s.Send(p);
+		} while (str[0] != 'q');
+	}
 	
-	p >> p3;
-
+}
+int main()
+{
+	int val; 
+	std::cin >> val;
+	std::cin.ignore();
+	if (val == 1)
+	{
+		Server();
+	}
+	else
+	{
+		Client();
+	}
 	
+	return 0;
 
 	system("pause");
-	return 0;
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include <assert.h>
+#include <memory>
 template<class T>
 class Vector
 {
@@ -14,6 +15,8 @@ public:
 		This constructor initializes all members to 0.
 	*/
 	Vector();
+
+	Vector(const Vector<type>& copy);
 
 	Vector(unsigned int _capacity);
 
@@ -78,6 +81,8 @@ public:
 
 	void clear();
 
+	Vector<type>& operator=(const Vector<T>& other);
+
 private:
 	size_type m_size;
 	size_type m_reserved;
@@ -97,6 +102,15 @@ m_buffer	(new buffer_type[sizeof(type)*m_reserved])
 }
 
 template<class T>
+Vector<T>::Vector(const Vector<type>& copy)
+{
+	m_size = copy.m_size;
+	m_reserved = copy.m_reserved;
+	m_buffer = new buffer_type[sizeof(type)*m_reserved];
+	memcpy(&m_buffer[0], &copy.m_buffer[0], m_size * sizeof(type));
+}
+
+template<class T>
 Vector<T>::Vector(unsigned int _capacity) :
 m_size		(_capacity),
 m_reserved	(_capacity),
@@ -110,6 +124,7 @@ Vector<T>::~Vector()
 {
 	clear();
 	delete[] m_buffer;
+	m_buffer = nullptr;
 }
 
 ////////////////////////////////////////////////////
@@ -162,6 +177,7 @@ void Vector<T>::PopBack()
 template<class T>
 typename Vector<T>::type & Vector<T>::operator[](int index) const
 {
+	assert(index < Size());
 	return *reinterpret_cast<Vector<T>::type*>(m_buffer + (sizeof(T) * index));
 }
 
@@ -169,26 +185,51 @@ typename Vector<T>::type & Vector<T>::operator[](int index) const
 template<class T>
 void Vector<T>::Reserve(size_type _capacity)
 {
-
-	m_reserved = _capacity;
-
-	buffer_type* newBuffer = new buffer_type[sizeof(type) * m_reserved];
-
-	for (size_type i = 0; i < m_size; i++)
+	// Only reserve if we dont have the requested capacity
+	if (m_reserved < _capacity)
 	{
-		T* oldPos = reinterpret_cast<type*>(m_buffer + (sizeof(type) * i));
-		T* newPos = reinterpret_cast<type*>(newBuffer + (sizeof(type) * i));
-		*newPos = *oldPos;
+		m_reserved = _capacity;
+
+		buffer_type* newBuffer = new buffer_type[sizeof(type) * m_reserved];
+
+		for (size_type i = 0; i < m_size; i++)
+		{
+			T* oldPos = reinterpret_cast<type*>(m_buffer + (sizeof(type) * i));
+			T* newPos = reinterpret_cast<type*>(newBuffer + (sizeof(type) * i));
+			*newPos = *oldPos;
+		}
+		delete[] m_buffer;
+		m_buffer = newBuffer;
 	}
-	delete[] m_buffer;
-	m_buffer = newBuffer;
+
 }
 
+////////////////////////////////////////////////////
 template<class T>
 void Vector<T>::Resize(size_type _capacity)
 {
-	Reserve(_capacity);
-	m_size = _capacity;
+	if (_capacity > m_reserved)
+	{
+		// Reallocate forward
+		Reserve(_capacity);
+		m_size = _capacity;
+	}
+	else if (_capacity > m_size)
+	{
+		//// Append
+		//PushBack(T());
+		//memset(&m_buffer[0] + m_size, T, sizeof(T)*(_capacity - m_size));
+		m_size = _capacity;
+	}
+	else
+	{
+		// Trim
+		size_type trimLength = m_size - _capacity;
+		for (int i = 0; i < trimLength; i++)
+		{
+			PopBack();
+		}
+	}
 }
 
 template<class T>
@@ -208,6 +249,20 @@ void Vector<T>::clear()
 {
 	while (m_size != 0)
 		PopBack();
+}
+
+template<class T>
+typename Vector<T>& Vector<T>::operator=(const Vector<T>& other)
+{
+	if (this != &other)
+	{
+		delete[] m_buffer;
+		m_size = other.m_size;
+		m_reserved = other.m_reserved;
+		m_buffer = new buffer_type[sizeof(type)*m_reserved];
+		memcpy(&m_buffer[0], &other.m_buffer[0], m_size * sizeof(type));
+	}
+	return *this;
 }
 
 

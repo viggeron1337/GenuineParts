@@ -56,24 +56,6 @@ void Packet::Clear()
 }
 
 ////////////////////////////////////////////////////
-Packet & Packet::operator>>(Int8 & data)
-{
-	if (CheckSize(sizeof(data)))
-	{
-		data = *(reinterpret_cast<const Int8*>(&m_data[m_readPos]));
-		m_readPos += sizeof(data);
-	}
-	return *this;
-}
-
-////////////////////////////////////////////////////
-Packet & Packet::operator<<(Int8 & data)
-{
-	Append(&data, sizeof(data));
-	return *this;
-}
-
-////////////////////////////////////////////////////
 bool Packet::CheckSize(std::size_t size)
 {
 	m_isValid = m_isValid && (m_readPos + size <= m_data.Size());

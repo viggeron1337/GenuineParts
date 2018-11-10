@@ -22,7 +22,7 @@ SocketInit globalInit;
 Socket::Socket(Type _type):
 m_type			(_type),
 m_socket		(INVALID_SOCKET),
-m_isBlocking	(false)
+m_isBlocking	(true)
 {
 }
 

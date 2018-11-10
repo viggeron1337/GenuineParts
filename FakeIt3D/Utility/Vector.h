@@ -1,13 +1,14 @@
 #pragma once
 #include <assert.h>
 #include <memory>
-template<class T>
+template<class T, class Allocator = std::allocator<T>>
 class Vector
 {
 public:
+	typedef typename Allocator::pointer pointer;
+	typedef typename Allocator::size_type size_type;
 	using type = T;
 	using iterator = T*;
-	using size_type = unsigned int;
 	using buffer_type = unsigned char;
 
 	/*
@@ -81,132 +82,137 @@ public:
 
 	void clear();
 
-	Vector<type>& operator=(const Vector<T>& other);
+	Vector<T, Allocator>& operator=(const Vector<T, Allocator>& other);
 
 private:
 	size_type m_size;
 	size_type m_reserved;
-	buffer_type* m_buffer;
+	pointer m_buffer;
+	Allocator m_alloc;
 
 };
 
 
 ////////////////////////////////////////////////////
-template<class T>
-Vector<T>::Vector() :
+template<class T, class Allocator>
+Vector<T,Allocator>::Vector() :
 m_size		(0),
-m_reserved	(2),
-m_buffer	(new buffer_type[sizeof(type)*m_reserved])
+m_reserved	(0),
+m_buffer	(nullptr)
 {
 
 }
 
-template<class T>
-Vector<T>::Vector(const Vector<type>& copy)
+template<class T, class Allocator>
+Vector<T, Allocator>::Vector(const Vector<type>& copy)
 {
 	m_size = copy.m_size;
 	m_reserved = copy.m_reserved;
-	m_buffer = new buffer_type[sizeof(type)*m_reserved];
-	memcpy(&m_buffer[0], &copy.m_buffer[0], m_size * sizeof(type));
+
+	m_buffer = m_alloc.allocate(m_reserved);
+
+	for (size_type i = 0; i < m_size; i++)
+	{
+		m_alloc.construct(m_buffer + i, copy.m_buffer[i]);
+	}
 }
 
-template<class T>
-Vector<T>::Vector(unsigned int _capacity) :
+template<class T, class Allocator>
+Vector<T, Allocator>::Vector(unsigned int _capacity) :
 m_size		(_capacity),
 m_reserved	(_capacity),
-m_buffer(new buffer_type[sizeof(type)*_capacity])
+m_buffer	(m_alloc.allocate(_capacity))
 {
-
+	
 }
 
-template<class T>
-Vector<T>::~Vector()
+template<class T, class Allocator>
+Vector<T, Allocator>::~Vector()
 {
 	clear();
-	delete[] m_buffer;
-	m_buffer = nullptr;
+	m_alloc.deallocate(m_buffer, m_reserved);
 }
 
 ////////////////////////////////////////////////////
-template<class T>
-typename Vector<T>::iterator Vector<T>::begin() const
+template<class T, class Allocator>
+typename Vector<T, Allocator>::iterator Vector<T,Allocator>::begin() const
 {
 	return reinterpret_cast<type*>(m_buffer);
 }
 
 ////////////////////////////////////////////////////
-template<class T>
-typename Vector<T>::iterator Vector<T>::end() const
+template<class T, class Allocator>
+typename Vector<T, Allocator>::iterator Vector<T, Allocator>::end() const
 {
 	return reinterpret_cast<type*>(m_buffer + (sizeof(T) * m_size));
 }
 
 ////////////////////////////////////////////////////
-template<class T>
-typename Vector<T>::type & Vector<T>::Front() const
+template<class T, class Allocator>
+typename Vector<T, Allocator>::type & Vector<T, Allocator>::Front() const
 {
-	return *reinterpret_cast<Vector<T>::type*>(m_buffer);
+	return *reinterpret_cast<typename Vector<T>::pointer>(m_buffer);
 }
 
 ////////////////////////////////////////////////////
-template<class T>
-typename Vector<T>::type & Vector<T>::Back() const
+template<class T, class Allocator>
+typename Vector<T, Allocator>::type & Vector<T, Allocator>::Back() const
 {
-	return *reinterpret_cast<Vector<T>::type*>(m_buffer + (sizeof(T) * (m_size - 1)));
+	return *reinterpret_cast<typename Vector<T>::pointer>(m_buffer + (sizeof(T) * (m_size - 1)));
 }
 
 ////////////////////////////////////////////////////
-template<class T>
-void Vector<T>::PushBack(const type & _value)
+template<class T, class Allocator>
+void Vector<T, Allocator>::PushBack(const type & _value)
 {
 	if (m_size >= m_reserved)
-		Reserve(m_reserved << 1);
+		Reserve(m_reserved + 2);
 
-	type* pos = reinterpret_cast<type*>(m_buffer + (sizeof(T) * m_size++));
-	*pos = _value;
+	m_alloc.construct(m_buffer + m_size, _value);
+	m_size++;
 }
 
-template<class T>
-void Vector<T>::PopBack()
+template<class T, class Allocator>
+void Vector<T,Allocator>::PopBack()
 {
-	(reinterpret_cast<T*>(m_buffer)[m_size - 1]).~T();
-
+	m_alloc.destroy(m_buffer + m_size - 1);
 	--m_size;
 }
 
-template<class T>
-typename Vector<T>::type & Vector<T>::operator[](int index) const
+template<class T, class Allocator>
+typename Vector<T, Allocator>::type & Vector<T, Allocator>::operator[](int index) const
 {
 	assert(index < Size());
-	return *reinterpret_cast<Vector<T>::type*>(m_buffer + (sizeof(T) * index));
+	return m_buffer[index];
 }
 
 ////////////////////////////////////////////////////
-template<class T>
-void Vector<T>::Reserve(size_type _capacity)
+template<class T, class Allocator>
+void Vector<T, Allocator>::Reserve(size_type _capacity)
 {
 	// Only reserve if we dont have the requested capacity
 	if (m_reserved < _capacity)
 	{
-		m_reserved = _capacity;
+	
 
-		buffer_type* newBuffer = new buffer_type[sizeof(type) * m_reserved];
+		T* newBuffer = m_alloc.allocate(_capacity);
 
 		for (size_type i = 0; i < m_size; i++)
 		{
-			T* oldPos = reinterpret_cast<type*>(m_buffer + (sizeof(type) * i));
-			T* newPos = reinterpret_cast<type*>(newBuffer + (sizeof(type) * i));
-			*newPos = *oldPos;
+			m_alloc.construct(newBuffer + i, m_buffer[i]);
+			m_alloc.destroy(m_buffer + i);
 		}
-		delete[] m_buffer;
+		
+		m_alloc.deallocate(m_buffer, m_reserved);
 		m_buffer = newBuffer;
+		m_reserved = _capacity;
 	}
 
 }
 
 ////////////////////////////////////////////////////
-template<class T>
-void Vector<T>::Resize(size_type _capacity)
+template<class T, class Allocator>
+void Vector<T, Allocator>::Resize(size_type _capacity)
 {
 	if (_capacity > m_reserved)
 	{
@@ -232,35 +238,41 @@ void Vector<T>::Resize(size_type _capacity)
 	}
 }
 
-template<class T>
-typename Vector<T>::size_type Vector<T>::Size() const
+template<class T, class Allocator>
+typename Vector<T, Allocator>::size_type Vector<T, Allocator>::Size() const
 {
 	return m_size;
 }
 
-template<class T>
-bool Vector<T>::empty() const
+template<class T, class Allocator>
+bool Vector<T, Allocator>::empty() const
 {
 	return m_size == 0;
 }
 
-template<class T>
-void Vector<T>::clear()
+template<class T, class Allocator>
+void Vector<T, Allocator>::clear()
 {
 	while (m_size != 0)
 		PopBack();
 }
 
-template<class T>
-typename Vector<T>& Vector<T>::operator=(const Vector<T>& other)
+template<class T, class Allocator>
+typename Vector<T, Allocator>& Vector<T, Allocator>::operator=(const Vector<T, Allocator>& other)
 {
 	if (this != &other)
 	{
 		delete[] m_buffer;
 		m_size = other.m_size;
 		m_reserved = other.m_reserved;
-		m_buffer = new buffer_type[sizeof(type)*m_reserved];
-		memcpy(&m_buffer[0], &other.m_buffer[0], m_size * sizeof(type));
+
+		m_buffer = m_alloc.allocate(m_reserved);
+
+		for (size_type i = 0; i < m_size; i++)
+		{
+			m_alloc.construct(m_buffer + i, other.m_buffer[i]);
+		}
+
 	}
 	return *this;
 }

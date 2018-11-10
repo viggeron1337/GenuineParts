@@ -62,7 +62,7 @@ int main()
 	assert(test.Size() == 0);
 	assert(realVec.size() == 0);
 
-	
+
 	for (int i = 0; i < 20; i++)
 	{
 		Test t;
@@ -80,8 +80,8 @@ int main()
 		assert(test.Front().x == realVec.front().x);
 		test.PopBack();
 		realVec.pop_back();
-		
-	} 
+
+	}
 
 
 

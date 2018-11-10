@@ -1,6 +1,6 @@
 #include "TCPSocket.h"
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 
 ////////////////////////////////////////////////////
 TCPSocket::TCPSocket() :

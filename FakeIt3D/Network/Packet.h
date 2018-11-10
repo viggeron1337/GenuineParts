@@ -69,14 +69,13 @@ Packet & Packet::operator>>(std::string & data)
 	}
 	return *this;
 }
-#include <iostream>
+
 ////////////////////////////////////////////////////////////
 template<>
 Packet& Packet::operator <<(std::string& data)
 {
 	// First insert string length
 	Uint32 length = static_cast<Uint32>(data.size());
-	std::cout << "String size" << length << std::endl;
 	*this << length;
 
 	// Then insert characters

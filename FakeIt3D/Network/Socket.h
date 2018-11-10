@@ -26,6 +26,8 @@ public:
 	*/
 	void setBlocking(bool _blocking);
 
+	virtual bool operator==(const Socket& other);
+
 protected:
 	enum Type
 	{
@@ -46,6 +48,7 @@ protected:
 	SocketHandle getHandle() const;
 
 	Socket::Status getErrorStatus() const; 
+
 
 private:
 	Type			m_type;

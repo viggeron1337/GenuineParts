@@ -130,6 +130,11 @@ Socket::Status Socket::getErrorStatus() const
 	}
 }
 
+bool Socket::operator==(const Socket & other)
+{
+	return m_socket == other.m_socket;
+}
+
 
 ////////////////////////////////////////////////////
 void Socket::setBlocking(bool _blocking)

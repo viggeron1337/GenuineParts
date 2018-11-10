@@ -14,41 +14,66 @@ void Server()
 		std::cout << "Bound on (" << G_PORT << ")\n";
 	else 
 		return;
-
-	TCPSocket s;
-	status = listener.Accept(s);
-	if (status == Socket::Done)
-		std::cout << "Accepted a socket!" << std::endl;
-	else
-		return;
-	do
+	
+	Vector<TCPSocket> sockets;
+	
+	listener.setBlocking(false);
+	while(true)
 	{
-		Packet p;
-		status = s.Receive(p);
-		
-		std::string str;
-		p >> str;
-		std::cout << str << std::endl;
+		TCPSocket newSock;
+	
+		status = listener.Accept(newSock);
+		if (status == Socket::Done)
+		{
+			std::cout << "new socket accepted!" << std::endl;
+			newSock.setBlocking(false);
+			sockets.PushBack(newSock);
+		}
 
-	} while (status == Socket::Done);
+		for (int i = 0; i < sockets.Size(); i++)
+		{
+			Packet p;
+			status = sockets[i].Receive(p);
+			if (status == Socket::Done)
+			{
+				for (int j = 0; j < sockets.Size(); j++)
+				{
+					if (j != i)
+					{
+						sockets[j].Send(p);
+					}
+				}
+			}
+
+		}
+
+	}
 }
 
 void Client()
 {
 	TCPSocket s;
-
+	
 	if (s.Connect(IPAddress::Localhost, G_PORT) == Socket::Status::Done)
 	{
-		
+		s.setBlocking(false);
 		std::string str;
 		do
 		{
 			Packet p;
-
+			s.Receive(p);
+			if (p.GetDataSize())
+			{
+				p >> str;
+				std::cout << str << std::endl;
+			}
 			
 			std::getline(std::cin, str);
-			p << str;
-			s.Send(p);
+			if (str.size())
+			{
+				p << str;
+				s.Send(p);
+			}
 		} while (str[0] != 'q');
 	}
 	

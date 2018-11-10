@@ -125,6 +125,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Network\IPAddress.cpp" />
+    <ClCompile Include="Network\Packet.cpp" />
     <ClCompile Include="Network\Socket.cpp" />
     <ClCompile Include="Network\TCPListener.cpp" />
     <ClCompile Include="Network\TCPSocket.cpp" />
@@ -134,6 +135,7 @@
     <ClInclude Include="Extern.h" />
     <ClInclude Include="Network\Config.h" />
     <ClInclude Include="Network\IPAddress.h" />
+    <ClInclude Include="Network\Packet.h" />
     <ClInclude Include="Network\Socket.h" />
     <ClInclude Include="Network\TCPListener.h" />
     <ClInclude Include="Network\TCPSocket.h" />

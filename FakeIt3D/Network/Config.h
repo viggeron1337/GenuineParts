@@ -1,4 +1,5 @@
 #pragma once
+#include <cwchar>
 
 // 8 bits integer types
 using Int8	= signed char;

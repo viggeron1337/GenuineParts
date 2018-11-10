@@ -1,5 +1,5 @@
 #pragma once
-
+#include <assert.h>
 template<class T>
 class Vector
 {
@@ -14,6 +14,10 @@ public:
 		This constructor initializes all members to 0.
 	*/
 	Vector();
+
+	Vector(unsigned int _capacity);
+
+	virtual ~Vector();
 
 	/*
 		Begin iterator
@@ -55,6 +59,10 @@ public:
 	*/
 	void PushBack(const type& _value);
 
+	void PopBack();
+
+	type& operator[](int index) const;
+
 	/*
 		Increase the capacity of the internal array
 
@@ -62,6 +70,13 @@ public:
 		capacity	new capacity of the array
 	*/
 	void Reserve(size_type _capacity);
+
+	void Resize(size_type _capacity);
+
+	size_type Size() const;
+	bool empty() const;
+
+	void clear();
 
 private:
 	size_type m_size;
@@ -79,6 +94,22 @@ m_reserved	(2),
 m_buffer	(new buffer_type[sizeof(type)*m_reserved])
 {
 
+}
+
+template<class T>
+Vector<T>::Vector(unsigned int _capacity) :
+m_size		(_capacity),
+m_reserved	(_capacity),
+m_buffer(new buffer_type[sizeof(type)*_capacity])
+{
+
+}
+
+template<class T>
+Vector<T>::~Vector()
+{
+	clear();
+	delete[] m_buffer;
 }
 
 ////////////////////////////////////////////////////
@@ -99,14 +130,14 @@ typename Vector<T>::iterator Vector<T>::end() const
 template<class T>
 typename Vector<T>::type & Vector<T>::Front() const
 {
-	return *reinterpret_cast<Vector<T>::type*>(m_buffer);;
+	return *reinterpret_cast<Vector<T>::type*>(m_buffer);
 }
 
 ////////////////////////////////////////////////////
 template<class T>
 typename Vector<T>::type & Vector<T>::Back() const
 {
-	return *reinterpret_cast<Vector<T>::type*>(m_buffer + (sizeof(T) * (m_size - 1)));;
+	return *reinterpret_cast<Vector<T>::type*>(m_buffer + (sizeof(T) * (m_size - 1)));
 }
 
 ////////////////////////////////////////////////////
@@ -120,10 +151,25 @@ void Vector<T>::PushBack(const type & _value)
 	*pos = _value;
 }
 
+template<class T>
+void Vector<T>::PopBack()
+{
+	(reinterpret_cast<T*>(m_buffer)[m_size - 1]).~T();
+
+	--m_size;
+}
+
+template<class T>
+typename Vector<T>::type & Vector<T>::operator[](int index) const
+{
+	return *reinterpret_cast<Vector<T>::type*>(m_buffer + (sizeof(T) * index));
+}
+
 ////////////////////////////////////////////////////
 template<class T>
 void Vector<T>::Reserve(size_type _capacity)
 {
+
 	m_reserved = _capacity;
 
 	buffer_type* newBuffer = new buffer_type[sizeof(type) * m_reserved];
@@ -136,6 +182,32 @@ void Vector<T>::Reserve(size_type _capacity)
 	}
 	delete[] m_buffer;
 	m_buffer = newBuffer;
+}
+
+template<class T>
+void Vector<T>::Resize(size_type _capacity)
+{
+	Reserve(_capacity);
+	m_size = _capacity;
+}
+
+template<class T>
+typename Vector<T>::size_type Vector<T>::Size() const
+{
+	return m_size;
+}
+
+template<class T>
+bool Vector<T>::empty() const
+{
+	return m_size == 0;
+}
+
+template<class T>
+void Vector<T>::clear()
+{
+	while (m_size != 0)
+		PopBack();
 }
 
 
